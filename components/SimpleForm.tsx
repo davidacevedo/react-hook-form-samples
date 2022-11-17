@@ -8,22 +8,19 @@ import {
   FormRow,
   Form,
 } from '@appfolio/react-gears';
-import { useForm, UseFormRegisterReturn, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { refToInnerRef } from '../utils';
 
-interface SampleInputs {
-  first: string;
-  last: string;
+interface FormFields {
+  firstName: string;
+  lastName: string;
 }
 
-export const refToInnerRef = ({ ref, ...rest }: UseFormRegisterReturn) => {
-  return { ...rest, innerRef: ref };
-};
-
-export default function SimpleForm() {
-  const { register, handleSubmit } = useForm<any>({ mode: 'onBlur', reValidateMode: 'onBlur' });
+export default function SimpleForm({ submit }: any) {
+  const { register, handleSubmit } = useForm<FormFields>({ mode: 'onBlur', reValidateMode: 'onBlur' });
   
-  const onSubmit = (data: SampleInputs) => {
-    console.log(data)
+  const onSubmit = (data: FormFields) => {
+    submit(data)
   };
 
   return (
@@ -34,8 +31,8 @@ export default function SimpleForm() {
         </CardHeader>
         <CardBody>
           <Form onSubmit={handleSubmit(onSubmit)}>
-            <FormRow label="First name" {...refToInnerRef(register('first'))} />
-            <FormRow label="Last name" {...refToInnerRef(register('last'))} />
+            <FormRow label="First name" {...refToInnerRef(register('firstName'))} />
+            <FormRow label="Last name" {...refToInnerRef(register('lastName'))} />
             <Button color="primary" type="submit">Submit</Button>
           </Form>
         </CardBody>
@@ -44,14 +41,14 @@ export default function SimpleForm() {
   );
 }
 
-export function OldForm() {
+export function OldForm({ submit }: any) {
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   
   const onSubmit = (e) => {
     e.preventDefault();
 
-    console.log({
+    submit({
       firstName,
       lastName
     })

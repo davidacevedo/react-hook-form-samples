@@ -8,27 +8,22 @@ import {
   FormRow,
   Form,
 } from '@appfolio/react-gears';
-import { useForm, UseFormRegisterReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { refToInnerRef } from '../utils';
 
-interface User {
-  first: string;
-  last: string;
-  dob: string;
-  email: string;
+interface FormFields {
+  firstName: string;
+  lastName: string;
 }
 
-export const refToInnerRef = ({ ref, ...rest }: UseFormRegisterReturn) => {
-  return { ...rest, innerRef: ref };
-};
-
-export default function ValidationExamples() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+export default function ValidationExamples({ submit }: any) {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormFields>({
     mode: 'onBlur',
     reValidateMode: 'onBlur'
   });
   
-  const onSubmit = (data: User) => {
-    console.log(data)
+  const onSubmit = (data: FormFields) => {
+    submit(data)
   };
 
   return (
@@ -41,19 +36,18 @@ export default function ValidationExamples() {
           <Form onSubmit={handleSubmit(onSubmit)}>
             <FormRow
               label="First name"
-              feedback={errors.first?.message}
-              {...refToInnerRef(register('first', {
+              feedback={errors.firstName?.message}
+              {...refToInnerRef(register('firstName', {
                 required: 'first name needed',
                 validate: {
-                  custom1: (val) => val.length > 5 || 'not greater than 5',
-                  custom2: (val) => val.length < 7 || 'not less than 7'
+                  custom1: (val) => val.length > 5 || 'not greater than 5'
                 }
               }))}
             />
             <FormRow
               label="Last name"
-              feedback={errors.last?.message}
-              {...refToInnerRef(register('last', { required: 'last name needed'}))}
+              feedback={errors.lastName?.message}
+              {...refToInnerRef(register('lastName', { required: 'last name needed'}))}
             />
             <Button color="primary" type="submit">Submit</Button>
           </Form>
@@ -63,7 +57,7 @@ export default function ValidationExamples() {
   );
 }
 
-export function OldFormValidationsExample() {
+export function OldFormValidationsExample({ submit }: any) {
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   const [firstNameError, setFirstNameError] = React.useState('')
@@ -93,7 +87,7 @@ export function OldFormValidationsExample() {
       return;
     }
 
-    console.log({ firstName, lastName });
+    submit({ firstName, lastName });
   };
 
   return (
